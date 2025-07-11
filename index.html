@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Оживающее AR-изображение</title>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+    <style>
+      body { margin: 0; overflow: hidden; }
+    </style>
+  </head>
+  <body>
+    <a-scene embedded arjs="trackingMethod: best; sourceType: webcam;">
+      <!-- Маркер Hiro -->
+      <a-marker preset="hiro">
+        <!-- Статичное изображение -->
+        <a-image src="static.jpg" width="2" height="2" id="static-img"></a-image>
+        <!-- Анимированное (изначально скрыто) -->
+        <a-image src="animated.gif" width="2" height="2" id="animated-img" visible="false"></a-image>
+      </a-marker>
+      <a-entity camera></a-entity>
+    </a-scene>
+    
+    <script>
+      // Ждём загрузки сцены
+      document.querySelector('a-scene').addEventListener('loaded', function() {
+        const marker = document.querySelector('a-marker');
+        const staticImg = document.getElementById('static-img');
+        const animatedImg = document.getElementById('animated-img');
+        
+        // Когда маркер распознан, включаем анимацию
+        marker.addEventListener('markerFound', () => {
+          staticImg.setAttribute('visible', 'false');
+          animatedImg.setAttribute('visible', 'true');
+        });
+        
+        // Когда маркер потерян, возвращаем статичное изображение
+        marker.addEventListener('markerLost', () => {
+          staticImg.setAttribute('visible', 'true');
+          animatedImg.setAttribute('visible', 'false');
+        });
+      });
+    </script>
+  </body>
+</html>
